@@ -1,0 +1,153 @@
+package gui;
+
+import javax.swing.JPanel;
+
+import java.awt.Component;
+import java.awt.EventQueue;
+import java.awt.GridBagLayout;
+
+import javax.swing.JScrollPane;
+
+import java.awt.GridBagConstraints;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JSplitPane;
+import javax.swing.JButton;
+
+import useraccount.Citizen;
+import useraccount.User;
+import useraccount.UserList;
+
+import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+import javax.swing.JTextField;
+
+public class AccountSystem extends JPanel {
+
+	DefaultListModel previewList = new DefaultListModel();
+	JList list = new JList();
+	List<String> capabilities = new ArrayList<String>();
+	private UserList userList;
+	private JLabel textMessage;
+	
+	/**
+	 * Create the panel.
+	 */
+	public AccountSystem(final UserList userList) {
+		
+		this.userList = userList;
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{146, 78, 51, 78, 97, 0};
+		gridBagLayout.rowHeights = new int[]{23, 221, 46, 0};
+		gridBagLayout.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		setLayout(gridBagLayout);
+		
+		JButton btnEdit = new JButton("Edit");
+		btnEdit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				handleEditAccount();
+			}
+		});
+		
+		JButton btnCreateGovAccount = new JButton("Create Account");
+		btnCreateGovAccount.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				CreateGovAccount createGovAccount = new CreateGovAccount(userList, AccountSystem.this);
+			}
+		});
+		GridBagConstraints gbc_btnCreateGovAccount = new GridBagConstraints();
+		gbc_btnCreateGovAccount.insets = new Insets(0, 0, 5, 5);
+		gbc_btnCreateGovAccount.gridx = 0;
+		gbc_btnCreateGovAccount.gridy = 0;
+		add(btnCreateGovAccount, gbc_btnCreateGovAccount);
+		GridBagConstraints gbc_btnEdit = new GridBagConstraints();
+		gbc_btnEdit.insets = new Insets(0, 0, 5, 5);
+		gbc_btnEdit.gridx = 2;
+		gbc_btnEdit.gridy = 0;
+		add(btnEdit, gbc_btnEdit);
+		
+		JButton btnDelete = new JButton("Delete");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				handleDelete();
+				refreshList(userList);
+			}
+		});
+		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
+		gbc_btnDelete.insets = new Insets(0, 0, 5, 0);
+		gbc_btnDelete.gridx = 4;
+		gbc_btnDelete.gridy = 0;
+		add(btnDelete, gbc_btnDelete);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
+		gbc_scrollPane.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane.gridwidth = 5;
+		gbc_scrollPane.gridx = 0;
+		gbc_scrollPane.gridy = 1;
+		add(scrollPane, gbc_scrollPane);
+		
+		list = new JList();
+		scrollPane.setViewportView(list);
+		
+		textMessage = new JLabel();
+		GridBagConstraints gbc_textMessage = new GridBagConstraints();
+		gbc_textMessage.insets = new Insets(0, 5, 0, 5);
+		gbc_textMessage.gridwidth = 5;
+		gbc_textMessage.fill = GridBagConstraints.BOTH;
+		gbc_textMessage.gridx = 0;
+		gbc_textMessage.gridy = 2;
+		add(textMessage, gbc_textMessage);
+		refreshList(userList);
+	}
+
+	protected void handleEditAccount() {
+		
+		System.out.println(userList.listOfUsers.get((list.getSelectedIndex())).toString());
+		
+		if (userList.listOfUsers.get((list.getSelectedIndex())).getClass().toString().equals("class useraccount.GovAgency")){
+			textMessage.setText("Government Agency account cannot be edited!");
+		}
+				
+		if (userList.listOfUsers.get((list.getSelectedIndex())).getClass().toString().equals("class useraccount.Citizen") || 
+				userList.listOfUsers.get((list.getSelectedIndex())).getClass().toString().equals("class useraccount.Journalist")){
+			textMessage.setText("");
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						EditAccount frame = new EditAccount((Citizen) userList.listOfUsers.get((list.getSelectedIndex())));
+						frame.setVisible(true);
+							
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}		
+	
+		
+	}
+
+	protected void handleDelete() {
+		this.userList.listOfUsers.remove(list.getSelectedIndex());
+	}
+
+	public void refreshList(final UserList userList) {
+		previewList.clear();
+		for (User users : userList.listOfUsers) {
+			previewList.addElement(users.getUserName());
+		}
+		list.setModel(previewList);
+	}
+	
+	 //+ " " + ((Citizen) users).getFirstName() + " "+ ((Citizen) users).getLastName()
+	
+}

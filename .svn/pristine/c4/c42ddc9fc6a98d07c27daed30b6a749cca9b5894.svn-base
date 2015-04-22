@@ -1,0 +1,137 @@
+package gui;
+
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.List;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+
+import javax.swing.BoxLayout;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.WindowConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import server.DisplayDataFromDB;
+import useraccount.UserList;
+
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+
+import javax.swing.JButton;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.Font;
+
+public class WindowCardLayoutAdmin extends JPanel implements LogOutButton {
+	
+	JFrame frame;
+	JTabbedPane tabbedPane;
+	CardLayout cardLayout;
+	JPanel upperPanel;
+	JPanel bottomPanel1;
+	JPanel bottomPanel2;
+	public int panelIndex;
+	private EventListPanel eList;
+	private AccountSystem accountSystem;
+	private MainFrame mainFrame;
+	private DisplayDataFromDB dataDB;
+	
+	public WindowCardLayoutAdmin(final MainFrame mainFrame) {
+		
+		this.mainFrame = mainFrame;
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{77, 0};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0};
+		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
+		setLayout(gridBagLayout);
+		
+		final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
+		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+		tabbedPane.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		tabbedPane.setPreferredSize(new Dimension(600,600));
+		GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
+		gbc_tabbedPane.anchor = GridBagConstraints.EAST;
+		gbc_tabbedPane.insets = new Insets(0, 0, 5, 0);
+		gbc_tabbedPane.fill = GridBagConstraints.VERTICAL;
+		gbc_tabbedPane.gridx = 0;
+		gbc_tabbedPane.gridy = 0;
+		add(tabbedPane, gbc_tabbedPane);
+		
+		tabbedPane.addTab("Home", bottomPanel1);
+		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+	    JPanel panel = new JPanel();
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.insets = new Insets(0, 0, 5, 0);
+		gbc_panel.fill = GridBagConstraints.VERTICAL;
+		gbc_panel.gridx = 0;
+		gbc_panel.gridy = 0;
+		add(panel, gbc_panel);
+		//panel.invalidate();
+		//panel.removeAll();
+		eList = new EventListPanel();
+		//panel.add(eList);
+		//panel.revalidate();
+		//panel.repaint();
+	    tabbedPane.setComponentAt(0, eList);
+	    
+	    tabbedPane.addTab("Admin", bottomPanel1);
+	    tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);	
+	    
+	    tabbedPane.addTab("DB", bottomPanel1);
+	    tabbedPane.setMnemonicAt(2, KeyEvent.VK_3);
+	    
+	    JButton btnLogOut = new JButton("Log Out");
+	    btnLogOut.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent arg0) {
+	    		handleLogOut();
+	    	}
+	    });
+	    GridBagConstraints gbc_btnLogOut = new GridBagConstraints();
+	    gbc_btnLogOut.anchor = GridBagConstraints.WEST;
+	    gbc_btnLogOut.gridx = 0;
+	    gbc_btnLogOut.gridy = 1;
+	    add(btnLogOut, gbc_btnLogOut);
+	    
+	    tabbedPane.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				if (e.getSource() instanceof JTabbedPane){
+					JTabbedPane pane = (JTabbedPane) e.getSource();
+					panelIndex = pane.getSelectedIndex();
+				}
+				
+				if (panelIndex == 0) {
+					tabbedPane.setComponentAt(0, eList);
+				}
+				if (panelIndex == 1) {//this cod can also be reduced as index 0 and 2, however the way it is currently set shows the pane in a more organised way.
+					bottomPanel2 = new JPanel();
+					bottomPanel2.invalidate();
+					bottomPanel2.removeAll();
+					accountSystem = new AccountSystem(mainFrame.userList);
+					bottomPanel2.add(accountSystem);
+					bottomPanel2.revalidate();
+					bottomPanel2.repaint();
+					tabbedPane.setComponentAt(1, bottomPanel2);
+				}
+				if (panelIndex == 2) {
+					dataDB = new DisplayDataFromDB();
+					tabbedPane.setComponentAt(2, dataDB);
+				}
+			}
+		});
+	}
+
+	public void handleLogOut() {
+		mainFrame.loggedInUser = null;
+		mainFrame.redraw();
+		
+	}        
+}

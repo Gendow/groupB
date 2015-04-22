@@ -1,0 +1,114 @@
+package test;
+
+import junit.framework.TestCase;
+import event.Event;
+import event.Helper;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Calendar;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class EventTest extends TestCase {
+	
+	public void testCreateEvent(){
+		Event newEvent = new Event("Rony", "Wageningen", "Hotboy112", "Fire");
+		assertNotNull(newEvent);
+	}
+	
+	public void testLocation(){
+		String location = "Wageningen";
+		Event newEvent = new Event("Rony", "Wageningen", "Hotboy112", "Fire");
+		newEvent.setLocation(location);
+		assertEquals("Wageningen", newEvent.getLocation());
+	}
+	
+	public void testCreator(){
+		String creator = "creator";
+		Event newEvent = new Event("Rony", "Wageningen", "Hotboy112", "Fire");
+		newEvent.setCreator(creator);
+		assertEquals("creator", newEvent.getCreator());
+	}
+	
+	public void testDescription(){
+		String description = "Hotboy112";
+		Event newEvent = new Event("Rony", "Wageningen", "Hotboy112", "Fire");
+		newEvent.setDescription(description);
+		assertEquals("Hotboy112", newEvent.getDescription());
+	}
+
+	public void testTimeStamp(){
+		DateFormat df = new SimpleDateFormat("dd-MM-yyy, HH:mm:ss");
+		Date dateOfCreation = Calendar.getInstance().getTime();
+		String testDate = df.format(dateOfCreation);
+		Event newEvent = new Event("Rony", "Wageningen", "Hotboy112", "Fire");
+		assertEquals(testDate, newEvent.getTimeStamp());
+	}
+	
+	public void testTitle(){
+		String title = "Rony";
+		Event newEvent = new Event("Rony", "Wageningen", "Hotboy112", "Fire");
+		newEvent.setTitle(title);
+		assertEquals("Rony", newEvent.getTitle());
+	}
+	
+	public void testType(){
+		String type = "Fire";
+		Event newEvent = new Event("Rony", "Wageningen", "Hotboy112", "Fire");
+		newEvent.setCategory(type);
+		assertEquals("Fire", newEvent.getCategory());
+	}
+	
+	public void testAddHelper(){
+		List<String> helpers = new ArrayList<String>();
+		String helpingperson = "Mark Kramer";
+		Event newEvent = new Event("Rony", "Wageningen", "Hotboy112", "Fire");
+		newEvent.addHelper(helpingperson);
+		assertEquals("Mark Kramer" + " ", newEvent.getHelper());
+		
+	}
+	
+	public String testGetAllAttributes() {
+		Event newEvent = new Event("Rony", "Wageningen", "Hotboy112", "Fire");
+		newEvent.setTitle("No practicals today");
+		newEvent.setLocation("GAIA WUR");
+		newEvent.setDescription("Server with Arcgis licenses flooded");
+		newEvent.setCreator("Aldo");
+		String attributes = newEvent.getTitle() + " , " + newEvent.getLocation() + " , " + newEvent.getDescription() + " , "  + newEvent.getCreator();
+		assertEquals("No practicals today, GAIA WUR, Server with ArcGis licenses flooded, Aldo", attributes);
+		return attributes;
+	}
+	
+	public String testGetHelper() {
+		List<String> helpers = new ArrayList<String>();
+		helpers.add("Rony");
+		helpers.add("Andronikos");
+		helpers.add("Bongani");
+		String returnhelpers = "";
+		
+		for (int i = 0; i < helpers.size(); i++) {
+			String forprint = helpers.get(i);
+			returnhelpers = returnhelpers + forprint.toString() + "";
+		}
+		assertEquals("Rony, Andronikos, Bogani", returnhelpers);
+		return returnhelpers;
+	}
+	
+	public void testAddDescription() {
+		String extraDescription = "There is a car beneath the tree";
+		Event newEvent = new Event("Fallen tree", "Wageningen", "A tree has fallen near a house", "Damage");
+		newEvent.setDescription(newEvent.getDescription() + " [UPDATE]: " + extraDescription);
+		assertEquals("A tree has fallen near a house [UPDATE]: There is a car beneath the tree", newEvent.getDescription());
+	}
+	
+	public void testStatus() {
+		String updateStatus = "Completed";
+		Event newEvent = new Event("Fallen tree", "Wageningen", "A tree has fallen near a house", "Damage");
+		newEvent.setStatus(updateStatus);
+		assertEquals("Completed", newEvent.getStatus());
+	}
+	
+}

@@ -1,0 +1,21 @@
+package test;
+
+import event.EventList;
+import event.Marker;
+import junit.framework.TestCase;
+
+public class MarkerTest extends TestCase {
+	
+	public void testCreateMarker() {
+		Marker marker = new Marker();
+		assertNotNull(marker);
+	}
+	
+	public void testCreateMarkerID() {
+		Marker marker = new Marker();
+		String eventID = EventList.listOfEvents.get(0).getEventID();
+		marker.setID(eventID);
+		assertEquals("0", marker.getID());
+	}
+
+}

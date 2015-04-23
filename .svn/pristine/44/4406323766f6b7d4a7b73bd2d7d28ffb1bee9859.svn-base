@@ -3,8 +3,6 @@ package gui;
 import java.awt.event.MouseEvent;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 import javax.swing.JTable;
@@ -12,7 +10,6 @@ import javax.swing.JTable;
 import org.json.JSONObject;
 
 import processing.core.PApplet;
-import server.EventListFromDataBase;
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.events.EventDispatcher;
 import de.fhpotsdam.unfolding.geo.Location;
@@ -22,14 +19,11 @@ import de.fhpotsdam.unfolding.providers.OpenStreetMap;
 import de.fhpotsdam.unfolding.utils.MapUtils;
 import event.EventList;
 
-
 public class MapApplet extends PApplet {
 	
-
-	private EventDispatcher eventDispatcher;
 	private SimplePointMarker marker;
-	private Location mouseLoc;
-	private List<SimplePointMarker> markersList = new ArrayList<SimplePointMarker>();
+	private EventDispatcher eventDispatcher;
+//	private List<Marker> EventMarkers = new ArrayList<Marker>();
 	static UnfoldingMap map;
 	
 	public void setup() {
@@ -56,7 +50,7 @@ public class MapApplet extends PApplet {
 		} else {
 			map.setTweening(false);
 		}
-		mouseLoc = map.getLocation(mouseX, mouseY);
+		Location mouseLoc = map.getLocation(mouseX, mouseY);
 		text(mouseLoc.getLat()+ " " + mouseLoc.getLon(), mouseX, mouseY);
 		
 	}
@@ -66,7 +60,6 @@ public class MapApplet extends PApplet {
 	
 		for (int i = 0; i < EventList.listOfEvents.size(); i++) {
 			String address = EventList.listOfEvents.get(i).getLocation();
-			SimplePointMarker localMarker;
 			
 			String url = String.format("https://maps.googleapis.com/maps/api/geocode/json?address={%s}", address.replace(" ", "+"));
 			URL obj = new URL(url);
@@ -80,52 +73,36 @@ public class MapApplet extends PApplet {
 				str += scan.nextLine();
 			scan.close();
 			JSONObject location = new JSONObject(str);
-			float lat = (float) location.getJSONArray("results").getJSONObject(0)
+			double lat = location.getJSONArray("results").getJSONObject(0)
 					.getJSONObject("geometry").getJSONObject("location").getDouble("lat");
-			float lng = (float) location.getJSONArray("results").getJSONObject(0)
+			double lng = location.getJSONArray("results").getJSONObject(0)
 					.getJSONObject("geometry").getJSONObject("location").getDouble("lng");
 			Location haarwegWageningen = new Location(lat, lng);
-			
 			marker = new SimplePointMarker(haarwegWageningen);
 			marker.setId(EventList.listOfEvents.get(i).getEventID());
-//			marker.setLocation(lat, lng);
-
-			markersList.add(marker);
-
-			
 			map.addMarker(marker);
 			marker.setStrokeWeight(5);
 			marker.setStrokeColor(color(255, 0, 0, 100));
 			marker.setColor(color(255, 0, 0, 100));
-			
-	
+			System.out.println(marker.getId());
 		}
-		
-		
-
 	}
 //		MouseHandler checkClick = new MouseHandler(this, map);
 			
 			
 
 		public void mouseClicked(MouseEvent evt) {
-			if (evt.getClickCount() == 2) {
-				Location blaah = map.getLocation(mouseX, mouseY);
-				for (int i = 0; i < markersList.size(); i++) {
-					System.out.println(markersList.get(i).getLocation());
-					System.out.println(blaah);
-//					if (blaah == markersList.get(i).getLocation()) {
-//						System.out.println("HUGA BUGA");
-//				}
-//					EventListPanel.selectedEvent = EventList.listOfEvents.get(4).getEventID();
-//					ViewEvent viewEvent = new ViewEvent();
+			if (evt.getClickCount() == 1) {
+				if (marker.getId().equals(EventList.listOfEvents.get(4).getEventID())) {
+					EventListPanel.selectedEvent = EventList.listOfEvents.get(4).getEventID();
+					ViewEvent viewEvent = new ViewEvent();
 				}
-//				System.out.println(marker.getId());
+				System.out.println(marker.getId());
 			}
 			
-//			if(evt.getClickCount() == 2) {
-//				ReportEventDialog reportEvent = new ReportEventDialog();
-//			}
+			if(evt.getClickCount() == 2) {
+				ReportEventDialog reportEvent = new ReportEventDialog();
+			}
 		}
 			
 			

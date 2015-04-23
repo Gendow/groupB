@@ -1,0 +1,16 @@
+package event;
+
+public class Marker {
+
+	private String markerID;
+
+	public void setID(String eventID) {
+		this.markerID = eventID;
+		
+	}
+
+	public String getID() {
+		return markerID;
+	}
+
+}
